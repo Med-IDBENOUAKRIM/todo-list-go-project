@@ -57,10 +57,24 @@ func getTodo(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, todo)
 }
 
+func updateIsDoneTodo(ctx *gin.Context) {
+	id := ctx.Param("id")
+	todo, err := getTodoById(id)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "Not found"})
+		return
+	}
+
+	todo.IsDone = !todo.IsDone
+	ctx.IndentedJSON(http.StatusOK, todo)
+
+}
+
 func main() {
 	router := gin.Default()
 	router.GET("/todos", getTodos)
 	router.POST("/todo", createNewTodo)
 	router.GET("/todo/:id", getTodo)
+	router.PATCH("/todo/:id", updateIsDoneTodo)
 	router.Run("localhost:" + util.GodotEnv("GO_PORT"))
 }
